@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 
 const ItemCard = ({ singleData }) => {
   const { name, image, price, qty } = singleData;
   console.log(singleData);
+  const [value, setValue] = useState(qty)
+  const setIncrease = () => {
+    setValue(parseInt(value) + 1)
+  }
+  const setDecrease = () => {
+    setValue(parseInt(value) - 1)
+  }
   return (
     <div className='card relative'>
       <img src={image} alt='' />
@@ -27,7 +34,7 @@ const ItemCard = ({ singleData }) => {
       <div className='flex gap-[10px] items-center ml-[10px]'>
         <p className='price'>{price} Dhs</p>
         <div className='input-group'>
-          <button>
+          <button onClick={() => setDecrease()}>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='5'
@@ -40,9 +47,10 @@ const ItemCard = ({ singleData }) => {
                 fill='#3F3F3F'
               />
             </svg>
+
           </button>
-          <p>{qty}</p>
-          <button>
+          <p>{value}</p>
+          <button onClick={() => setIncrease()}>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='5'

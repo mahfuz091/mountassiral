@@ -17,6 +17,13 @@ const MainMenu = () => {
       });
   }, []);
   console.log(data);
+  const [value, setValue] = useState(3)
+  const setIncrease = () => {
+    setValue(parseInt(value) + 1)
+  }
+  const setDecrease = () => {
+    setValue(parseInt(value) - 1)
+  }
 
   return (
     <div className='main-container xl:flex gap-[30px] '>
@@ -571,7 +578,7 @@ const MainMenu = () => {
                 <div className='flex items-center'>
                   <p className='price mr-[53px] lg:mr-[63px]'>18 Dhs</p>
                   <div className='input-group mr-[10px]'>
-                    <button>
+                    <button onClick={() => setDecrease()}>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         width='5'
@@ -585,8 +592,8 @@ const MainMenu = () => {
                         />
                       </svg>
                     </button>
-                    <p>3</p>
-                    <button>
+                    <p>{value}</p>
+                    <button onClick={() => setIncrease()}>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         width='5'
@@ -796,7 +803,7 @@ const MainMenu = () => {
                   <div className='flex items-center'>
                     <p className='price mr-[45px]'>18 Dhs</p>
                     <div className='input-group mr-[10px]'>
-                      <button>
+                      <button onClick={() => setDecrease()}>
                         <svg
                           xmlns='http://www.w3.org/2000/svg'
                           width='5'
@@ -810,8 +817,8 @@ const MainMenu = () => {
                           />
                         </svg>
                       </button>
-                      <p>3</p>
-                      <button>
+                      <p>{value}</p>
+                      <button onClick={() => setIncrease()}>
                         <svg
                           xmlns='http://www.w3.org/2000/svg'
                           width='5'
@@ -872,7 +879,7 @@ const MainMenu = () => {
                   <div className='flex items-center'>
                     <p className='price mr-[45px]'>18 Dhs</p>
                     <div className='input-group mr-[10px]'>
-                      <button>
+                      <button onClick={() => setDecrease()}>
                         <svg
                           xmlns='http://www.w3.org/2000/svg'
                           width='5'
@@ -886,8 +893,8 @@ const MainMenu = () => {
                           />
                         </svg>
                       </button>
-                      <p>3</p>
-                      <button>
+                      <p>{value}</p>
+                      <button onClick={() => setIncrease()}>
                         <svg
                           xmlns='http://www.w3.org/2000/svg'
                           width='5'
@@ -971,7 +978,7 @@ const MainMenu = () => {
                 <div className='flex items-center'>
                   <p className='price mr-[53px] lg:mr-[60px]'>18 Dhs</p>
                   <div className='input-group mr-[10px]'>
-                    <button>
+                    <button onClick={() => setDecrease()}>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         width='5'
@@ -985,8 +992,8 @@ const MainMenu = () => {
                         />
                       </svg>
                     </button>
-                    <p>3</p>
-                    <button>
+                    <p>{value}</p>
+                    <button onClick={() => setIncrease()}>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         width='5'
@@ -1070,7 +1077,7 @@ const MainMenu = () => {
                 <div className='flex items-center'>
                   <p className='price mr-[53px] lg:mr-[60px]'>18 Dhs</p>
                   <div className='input-group mr-[10px]'>
-                    <button>
+                    <button onClick={() => setDecrease()}>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         width='5'
@@ -1084,8 +1091,8 @@ const MainMenu = () => {
                         />
                       </svg>
                     </button>
-                    <p>3</p>
-                    <button>
+                    <p>{value}</p>
+                    <button onClick={() => setIncrease()}>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         width='5'
