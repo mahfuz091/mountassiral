@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Login2 = () => {
+  const [value, setvalue] = useState("")
+  console.log(value);
   return (
     <div className=' flex lg:justify-center items-center  login_bg relative'>
       <div className='overlay'></div>
@@ -25,24 +27,25 @@ const Login2 = () => {
             <input
               className='border-[#DDDEDE] border w-[320px]  px-[16px] py-[21px] rounded-[8px] placeholder-[#C9C9C9] bg-[#FCFCFC]'
               placeholder='Enter password'
-              type='text'
+              type='password'
               name=''
               id=''
+              value={value}
             />
           </div>
           <div className='login-button-group'>
-            <button className='number'>1</button>
-            <button className='number'>2</button>
-            <button className='number'>3</button>
-            <button className='number'>4</button>
-            <button className='number'>5</button>
-            <button className='number'>6</button>
-            <button className='number'>7</button>
-            <button className='number'>8</button>
-            <button className='number'>9</button>
+            <button className='number' onClick={() => setvalue(value + 1)}>1</button>
+            <button className='number' onClick={() => setvalue(value + 2)}>2</button>
+            <button className='number' onClick={() => setvalue(value + 3)}>3</button>
+            <button className='number' onClick={() => setvalue(value + 4)}>4</button>
+            <button className='number' onClick={() => setvalue(value + 5)}>5</button>
+            <button className='number' onClick={() => setvalue(value + 6)}>6</button>
+            <button className='number' onClick={() => setvalue(value + 7)}>7</button>
+            <button className='number' onClick={() => setvalue(value + 8)}>8</button>
+            <button className='number' onClick={() => setvalue(value + 9)}>9</button>
             <button className='login-number number'>Login</button>
-            <button className='number'>0</button>
-            <button className='number-cancel number'>C</button>
+            <button className='number' onClick={() => setvalue(value + 0)}>0</button>
+            <button className='number-cancel number' onClick={() => setvalue("")}>C</button>
           </div>
         </div>
       </div>
