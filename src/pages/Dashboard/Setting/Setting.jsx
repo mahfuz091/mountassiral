@@ -1,11 +1,11 @@
 import React from "react";
 
-const PreviousOrder = () => {
+const Setting = () => {
   return (
     <div className='main-container'>
-      <h1>Previous Order</h1>
+      <h2>Setting</h2>
     </div>
   );
 };
 
-export default PreviousOrder;
+export default Setting;

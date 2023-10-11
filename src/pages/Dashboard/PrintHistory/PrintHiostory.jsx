@@ -1,11 +1,11 @@
 import React from "react";
 
-const PreviousOrder = () => {
+const PrintHiostory = () => {
   return (
     <div className='main-container'>
-      <h1>Previous Order</h1>
+      <h2>Print History</h2>
     </div>
   );
 };
 
-export default PreviousOrder;
+export default PrintHiostory;

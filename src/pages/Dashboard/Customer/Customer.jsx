@@ -1,11 +1,11 @@
 import React from "react";
 
-const PreviousOrder = () => {
+const Customer = () => {
   return (
     <div className='main-container'>
-      <h1>Previous Order</h1>
+      <h2>Customer</h2>
     </div>
   );
 };
 
-export default PreviousOrder;
+export default Customer;

@@ -4,9 +4,26 @@ const ItemCard = ({ singleData }) => {
   const { name, image, price, qty } = singleData;
   console.log(singleData);
   return (
-    <div className='card'>
+    <div className='card relative'>
       <img src={image} alt='' />
       <h2>{name}</h2>
+      <button className='add-btn'>
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          width='20'
+          height='20'
+          viewBox='0 0 20 20'
+          fill='none'
+        >
+          <path
+            d='M10 5V15M15 10H5'
+            stroke='white'
+            stroke-width='1.5'
+            stroke-linecap='round'
+            stroke-linejoin='round'
+          />
+        </svg>
+      </button>
       <div className='flex gap-[10px] items-center ml-[10px]'>
         <p className='price'>{price} Dhs</p>
         <div className='input-group'>

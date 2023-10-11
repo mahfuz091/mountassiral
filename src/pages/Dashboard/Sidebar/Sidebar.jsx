@@ -2,14 +2,19 @@ import React from "react";
 import logo from "../../../assets/Images/logo.png";
 import { NavLink } from "react-router-dom";
 
-const Sidebar = () => {
+const Sidebar = ({ openSidebarToggle, OpenSidebar }) => {
   return (
-    <aside id='sidebar'>
+    <aside
+      id='sidebar'
+      className={openSidebarToggle ? "sidebar-responsive" : ""}
+    >
       <div className='sidebar-title'>
         <div className='sidebar-brand'>
           <img className='ml-[27px]' src={logo} alt='' />
         </div>
-        <span className='icon close_icon'>X</span>
+        <span className='icon close_icon' onClick={OpenSidebar}>
+          X
+        </span>
       </div>
 
       <ul className='sidebar-list'>
@@ -30,19 +35,19 @@ const Sidebar = () => {
           >
             <path
               d='M17.9604 2.06653H11.7902C11.3673 2.06653 11.0203 2.41353 11.0203 2.83645V9.00664C11.0203 9.43317 11.3673 9.77656 11.7902 9.77656H17.9604C18.3869 9.77656 18.7303 9.42955 18.7303 9.00664V2.83645C18.7303 2.41353 18.3869 2.06653 17.9604 2.06653Z'
-              fill='#000'
+              fill='black'
             />
             <path
               d='M14.8771 11.3199C12.7481 11.3199 11.0203 13.0477 11.0203 15.1768C11.0203 17.3058 12.7481 19.0336 14.8771 19.0336C17.0061 19.03 18.7303 17.3058 18.7339 15.1768C18.7303 13.0477 17.0061 11.3199 14.8771 11.3199Z'
-              fill='#000'
+              fill='black'
             />
             <path
               d='M8.70695 11.3199H2.53676C2.11385 11.3199 1.76685 11.667 1.76685 12.0899V18.2601C1.76685 18.6866 2.11385 19.03 2.53676 19.03H8.70695C9.13348 19.03 9.47687 18.683 9.47687 18.2601V12.0899C9.47687 11.667 9.13348 11.3199 8.70695 11.3199Z'
-              fill='#000'
+              fill='black'
             />
             <path
               d='M8.70695 2.06653H2.53676C2.11385 2.06653 1.76685 2.41353 1.76685 2.83645V9.00664C1.76685 9.43317 2.11385 9.77656 2.53676 9.77656H8.70695C9.13348 9.77656 9.47687 9.42955 9.47687 9.00664V2.83645C9.47687 2.41353 9.13348 2.06653 8.70695 2.06653Z'
-              fill='#000'
+              fill='black'
             />
           </svg>{" "}
           Main Menu
@@ -71,7 +76,14 @@ const Sidebar = () => {
           </svg>{" "}
           Previous Order
         </NavLink>
-        <NavLink className='sidebar-list-item'>
+        <NavLink
+          to='/print'
+          className={({ isActive }) =>
+            isActive
+              ? "sidebar-list-item sidebar-list-item-active"
+              : "sidebar-list-item"
+          }
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             width='20'
@@ -97,7 +109,14 @@ const Sidebar = () => {
           </svg>{" "}
           Print History
         </NavLink>
-        <NavLink className='sidebar-list-item'>
+        <NavLink
+          to='/customer'
+          className={({ isActive }) =>
+            isActive
+              ? "sidebar-list-item sidebar-list-item-active"
+              : "sidebar-list-item"
+          }
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             width='20'
@@ -139,7 +158,14 @@ const Sidebar = () => {
           </svg>{" "}
           Customer
         </NavLink>
-        <NavLink className='sidebar-list-item'>
+        <NavLink
+          to='/setting'
+          className={({ isActive }) =>
+            isActive
+              ? "sidebar-list-item sidebar-list-item-active"
+              : "sidebar-list-item"
+          }
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             width='20'
@@ -153,6 +179,25 @@ const Sidebar = () => {
             />
           </svg>{" "}
           Setting
+        </NavLink>
+        <NavLink className='sidebar-list-item mt-[100px]'>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            width='21'
+            height='20'
+            viewBox='0 0 21 20'
+            fill='none'
+          >
+            <path
+              d='M12.8704 10.7113C12.4795 10.7113 12.1635 11.0281 12.1635 11.4183V14.2462C12.1635 14.6358 11.8467 14.9532 11.4565 14.9532H9.33554V4.34859C9.33554 3.74484 8.95094 3.20542 8.37269 3.00464L8.16337 2.93461H11.4565C11.8467 2.93461 12.1635 3.25202 12.1635 3.64167V5.76258C12.1635 6.15274 12.4795 6.46951 12.8704 6.46951C13.2614 6.46951 13.5774 6.15274 13.5774 5.76258V3.64167C13.5774 2.47234 12.6258 1.52075 11.4565 1.52075H3.85655C3.82963 1.52075 3.8071 1.53279 3.78096 1.53629C3.74691 1.53344 3.71442 1.52075 3.67985 1.52075C2.90005 1.52075 2.26587 2.1548 2.26587 2.93461V15.6601C2.26587 16.2638 2.65047 16.8033 3.22872 17.004L7.48336 18.4223C7.62757 18.4668 7.771 18.4881 7.92168 18.4881C8.70149 18.4881 9.33554 17.8539 9.33554 17.0741V16.3671H11.4565C12.6258 16.3671 13.5774 15.4156 13.5774 14.2462V11.4183C13.5774 11.0281 13.2614 10.7113 12.8704 10.7113Z'
+              fill='black'
+            />
+            <path
+              d='M19.0261 8.0906L16.1982 5.26275C15.9961 5.06055 15.692 4.99971 15.4277 5.10923C15.164 5.21887 14.9914 5.47687 14.9914 5.76256V7.88348H12.1636C11.7733 7.88348 11.4565 8.20011 11.4565 8.5904C11.4565 8.9807 11.7733 9.29733 12.1636 9.29733H14.9914V11.4182C14.9914 11.7039 15.164 11.9619 15.4277 12.0716C15.692 12.1811 15.9961 12.1203 16.1982 11.9182L19.0261 9.09021C19.3025 8.81384 19.3025 8.36697 19.0261 8.0906Z'
+              fill='black'
+            />
+          </svg>{" "}
+          Logout
         </NavLink>
       </ul>
     </aside>
