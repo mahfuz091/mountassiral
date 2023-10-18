@@ -9,6 +9,7 @@ export const DashBoardLayout = () => {
   const OpenSidebar = () => {
     setOpenSidebarToggle(!openSidebarToggle);
   };
+
   return (
     <div className='padding'>
       <div className='grid-container'>

@@ -1,9 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ItemCard from "../../ItemCard/ItemCard";
-import img1 from "/images/img-1.png";
-import ok from "./Images/ok.png";
+
+import { ToggleContext } from "../../../context/ToggleProvider";
+import OrderItemCard from "./OrderItemCard";
 
 const MainMenu = () => {
+  const { openOrderDetailsToggle, control, setControl } =
+    useContext(ToggleContext);
+  const [storesItem, setStoresItem] = useState([]);
+
+  console.log(control);
+
   const [data, setData] = useState([]);
   const [toggleState, setToggleState] = useState(1);
   const toggleTab = (index) => {
@@ -16,20 +23,32 @@ const MainMenu = () => {
         setData(data.items);
       });
   }, []);
-  console.log(data);
-  const [value, setValue] = useState(3)
-  const setIncrease = () => {
-    setValue(parseInt(value) + 1)
-  }
-  const setDecrease = () => {
-    setValue(parseInt(value) - 1)
-  }
+  useEffect(() => {
+    const getStoredItem = JSON.parse(localStorage.getItem("item"));
+    if (getStoredItem) {
+      setStoresItem(getStoredItem);
+    }
+  }, [control]);
+
+  const handleDelete = (id) => {
+    const leaveItem = storesItem.filter((item) => item.singleData.id !== id);
+    if (leaveItem) {
+      setControl(!control);
+      localStorage.setItem("item", JSON.stringify(leaveItem));
+    } else {
+      localStorage.removeItem("item");
+    }
+  };
 
   return (
     <div className='main-container xl:flex gap-[30px] '>
-      <div className='taking-order'>
+      <div
+        className={
+          openOrderDetailsToggle ? "hidden" : "taking-order transition-all"
+        }
+      >
         <h1 className='main-title'>Prise De Comman</h1>
-        <div className='tabs-group'>
+        <div className='tabs-group lg:w-full xl:w-[500px] 2xl:w-full '>
           <div className='button-group'>
             <button
               className={toggleState === 1 ? "tab tab-active " : "tab"}
@@ -508,12 +527,17 @@ const MainMenu = () => {
           <div
             className={
               toggleState === 1
-                ? "content grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-[20px] lg:gap-[15px] active-content"
+                ? "content grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-[20px] lg:gap-[15px] active-content"
                 : "hidden "
             }
           >
             {data.map((singleData, index) => (
-              <ItemCard key={index} singleData={singleData}></ItemCard>
+              <ItemCard
+                key={index}
+                singleData={singleData}
+                setControl={setControl}
+                control={control}
+              ></ItemCard>
             ))}
           </div>
           <div
@@ -525,9 +549,12 @@ const MainMenu = () => {
           ></div>
         </div>
       </div>
-      <div className='order'>
+      <div
+        id='order'
+        className={openOrderDetailsToggle ? "order-responsive order" : "order"}
+      >
         <div className='lg:flex gap-[25px] items-center  order-header'>
-          <h2 className='order-title'>Oder Details</h2>
+          <h3 className='order-title'>Oder Details</h3>
           <div className='select'>
             <select name='' id=''>
               <option value=''>#01 tijani</option>
@@ -550,624 +577,13 @@ const MainMenu = () => {
           </div>
         </div>
         <div className='orders-container'>
-          <div className='order-items w-full relative '>
-            <div className='flex w-full items-center gap-[14px]'>
-              <img src={img1} alt='' />
-              <div>
-                <div className='flex justify-between items-center'>
-                  <h2>Care Noir</h2>
-                  <button className='delete-btn_header '>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='20'
-                      height='20'
-                      viewBox='0 0 20 20'
-                      fill='none'
-                    >
-                      <path
-                        d='M17.5 4.16663H2.50002C2.27901 4.16663 2.06704 4.25442 1.91076 4.4107C1.75448 4.56698 1.66669 4.77895 1.66669 4.99996C1.66669 5.22097 1.75448 5.43293 1.91076 5.58921C2.06704 5.7455 2.27901 5.83329 2.50002 5.83329H4.16669V15.8333C4.16689 16.4963 4.43034 17.132 4.89914 17.6008C5.36794 18.0696 6.00371 18.3331 6.66669 18.3333H13.3334C13.9963 18.3331 14.6321 18.0697 15.1009 17.6009C15.5697 17.1321 15.8332 16.4963 15.8334 15.8333V5.83329H17.5C17.721 5.83329 17.933 5.7455 18.0893 5.58921C18.2456 5.43293 18.3334 5.22097 18.3334 4.99996C18.3334 4.77895 18.2456 4.56698 18.0893 4.4107C17.933 4.25442 17.721 4.16663 17.5 4.16663ZM9.16669 13.3333C9.16669 13.5543 9.07889 13.7663 8.92261 13.9226C8.76633 14.0788 8.55437 14.1666 8.33335 14.1666C8.11234 14.1666 7.90038 14.0788 7.7441 13.9226C7.58782 13.7663 7.50002 13.5543 7.50002 13.3333V9.16663C7.50002 8.94561 7.58782 8.73365 7.7441 8.57737C7.90038 8.42109 8.11234 8.33329 8.33335 8.33329C8.55437 8.33329 8.76633 8.42109 8.92261 8.57737C9.07889 8.73365 9.16669 8.94561 9.16669 9.16663V13.3333ZM12.5 13.3333C12.5 13.5543 12.4122 13.7663 12.2559 13.9226C12.0997 14.0788 11.8877 14.1666 11.6667 14.1666C11.4457 14.1666 11.2337 14.0788 11.0774 13.9226C10.9212 13.7663 10.8334 13.5543 10.8334 13.3333V9.16663C10.8334 8.94561 10.9212 8.73365 11.0774 8.57737C11.2337 8.42109 11.4457 8.33329 11.6667 8.33329C11.8877 8.33329 12.0997 8.42109 12.2559 8.57737C12.4122 8.73365 12.5 8.94561 12.5 9.16663V13.3333Z'
-                        fill='white'
-                      />
-                      <path
-                        d='M8.33333 3.33329H11.6667C11.8877 3.33329 12.0996 3.2455 12.2559 3.08922C12.4122 2.93293 12.5 2.72097 12.5 2.49996C12.5 2.27895 12.4122 2.06698 12.2559 1.9107C12.0996 1.75442 11.8877 1.66663 11.6667 1.66663H8.33333C8.11232 1.66663 7.90036 1.75442 7.74408 1.9107C7.5878 2.06698 7.5 2.27895 7.5 2.49996C7.5 2.72097 7.5878 2.93293 7.74408 3.08922C7.90036 3.2455 8.11232 3.33329 8.33333 3.33329Z'
-                        fill='white'
-                      />
-                    </svg>
-                  </button>
-                </div>
-                <div className='flex items-center'>
-                  <p className='price mr-[53px] lg:mr-[63px]'>18 Dhs</p>
-                  <div className='input-group mr-[10px]'>
-                    <button onClick={() => setDecrease()}>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='5'
-                        height='1'
-                        viewBox='0 0 5 1'
-                        fill='none'
-                      >
-                        <path
-                          d='M0.21875 0.942242H4.25272V0H0.21875V0.942242Z'
-                          fill='#3F3F3F'
-                        />
-                      </svg>
-                    </button>
-                    <p>{value}</p>
-                    <button onClick={() => setIncrease()}>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='5'
-                        height='5'
-                        viewBox='0 0 5 5'
-                        fill='none'
-                      >
-                        <path
-                          d='M1.98263 0V2.03171H0V2.97395H1.98263V5.00566H3.02302V2.97395H5.00566V2.03171H3.02302V0H1.98263Z'
-                          fill='#F06D23'
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                  <p className='mr-[2px]'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='9'
-                      height='9'
-                      viewBox='0 0 9 9'
-                      fill='none'
-                    >
-                      <path
-                        d='M8.02664 1.31949L1.38766 7.95847M8.02664 7.95847L1.38766 1.31949'
-                        stroke='black'
-                        stroke-width='1.4'
-                        stroke-linecap='round'
-                        stroke-linejoin='round'
-                      />
-                    </svg>
-                  </p>
-                  <p className='qty mr-[10px]'>2</p>
-                  <button className='delete-btn'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='20'
-                      height='20'
-                      viewBox='0 0 20 20'
-                      fill='none'
-                    >
-                      <path
-                        d='M17.5 4.16663H2.50002C2.27901 4.16663 2.06704 4.25442 1.91076 4.4107C1.75448 4.56698 1.66669 4.77895 1.66669 4.99996C1.66669 5.22097 1.75448 5.43293 1.91076 5.58921C2.06704 5.7455 2.27901 5.83329 2.50002 5.83329H4.16669V15.8333C4.16689 16.4963 4.43034 17.132 4.89914 17.6008C5.36794 18.0696 6.00371 18.3331 6.66669 18.3333H13.3334C13.9963 18.3331 14.6321 18.0697 15.1009 17.6009C15.5697 17.1321 15.8332 16.4963 15.8334 15.8333V5.83329H17.5C17.721 5.83329 17.933 5.7455 18.0893 5.58921C18.2456 5.43293 18.3334 5.22097 18.3334 4.99996C18.3334 4.77895 18.2456 4.56698 18.0893 4.4107C17.933 4.25442 17.721 4.16663 17.5 4.16663ZM9.16669 13.3333C9.16669 13.5543 9.07889 13.7663 8.92261 13.9226C8.76633 14.0788 8.55437 14.1666 8.33335 14.1666C8.11234 14.1666 7.90038 14.0788 7.7441 13.9226C7.58782 13.7663 7.50002 13.5543 7.50002 13.3333V9.16663C7.50002 8.94561 7.58782 8.73365 7.7441 8.57737C7.90038 8.42109 8.11234 8.33329 8.33335 8.33329C8.55437 8.33329 8.76633 8.42109 8.92261 8.57737C9.07889 8.73365 9.16669 8.94561 9.16669 9.16663V13.3333ZM12.5 13.3333C12.5 13.5543 12.4122 13.7663 12.2559 13.9226C12.0997 14.0788 11.8877 14.1666 11.6667 14.1666C11.4457 14.1666 11.2337 14.0788 11.0774 13.9226C10.9212 13.7663 10.8334 13.5543 10.8334 13.3333V9.16663C10.8334 8.94561 10.9212 8.73365 11.0774 8.57737C11.2337 8.42109 11.4457 8.33329 11.6667 8.33329C11.8877 8.33329 12.0997 8.42109 12.2559 8.57737C12.4122 8.73365 12.5 8.94561 12.5 9.16663V13.3333Z'
-                        fill='white'
-                      />
-                      <path
-                        d='M8.33333 3.33329H11.6667C11.8877 3.33329 12.0996 3.2455 12.2559 3.08922C12.4122 2.93293 12.5 2.72097 12.5 2.49996C12.5 2.27895 12.4122 2.06698 12.2559 1.9107C12.0996 1.75442 11.8877 1.66663 11.6667 1.66663H8.33333C8.11232 1.66663 7.90036 1.75442 7.74408 1.9107C7.5878 2.06698 7.5 2.27895 7.5 2.49996C7.5 2.72097 7.5878 2.93293 7.74408 3.08922C7.90036 3.2455 8.11232 3.33329 8.33333 3.33329Z'
-                        fill='white'
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    className='comment-btn'
-                    onClick={() =>
-                      document.getElementById("my_modal_1").showModal()
-                    }
-                  >
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='20'
-                      height='20'
-                      viewBox='0 0 20 20'
-                      fill='none'
-                    >
-                      <path
-                        d='M10 17.5C11.4834 17.5 12.9334 17.0601 14.1668 16.236C15.4001 15.4119 16.3614 14.2406 16.9291 12.8701C17.4968 11.4997 17.6453 9.99168 17.3559 8.53683C17.0665 7.08197 16.3522 5.7456 15.3033 4.6967C14.2544 3.64781 12.918 2.9335 11.4632 2.64411C10.0083 2.35472 8.50032 2.50325 7.12987 3.07091C5.75943 3.63856 4.58809 4.59986 3.76398 5.83323C2.93987 7.0666 2.5 8.51664 2.5 10C2.5 11.24 2.8 12.4092 3.33333 13.4392L2.5 17.5L6.56083 16.6667C7.59083 17.2 8.76083 17.5 10 17.5Z'
-                        stroke='white'
-                        stroke-linecap='round'
-                        stroke-linejoin='round'
-                      />
-                    </svg>
-                  </button>
-                  {/* You can open the modal using document.getElementById('ID').showModal() method */}
-
-                  <dialog id='my_modal_1' className='modal'>
-                    <div className='modal-box'>
-                      <form method='dialog'>
-                        {/* if there is a button in form, it will close the modal */}
-                        <button className='close-btn absolute right-[10px] top-[10px]'>
-                          ✕
-                        </button>
-                      </form>
-                      <h3 className='comment-title'>Comment</h3>
-                      <p className='px-[20px] username'>Username</p>
-                      <p className='px-[20px] description'>
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry. Lorem Ipsum has been the industrys
-                        standard dummy text ever since the 1500s.
-                      </p>
-                      <form method='dialog'>
-                        <button
-                          className='ok-btn'
-                          onClick={() =>
-                            document.getElementById("my_modal_2").showModal()
-                          }
-                        >
-                          Ok
-                        </button>
-                      </form>
-                    </div>
-                  </dialog>
-                  <dialog id='my_modal_2' className='modal'>
-                    <div className='modal-box'>
-                      <form method='dialog'>
-                        {/* if there is a button in form, it will close the modal */}
-                        <button className='close-btn absolute right-[10px] top-[10px]'>
-                          ✕
-                        </button>
-                      </form>
-                      <h3 className='comment-title'>Choisir Boisson</h3>
-                      <div className='modal-card px-[20px] flex items-center gap-[15px] mb-[20px]'>
-                        <img src={img1} alt='' />
-                        <div>
-                          <h4>Cafe Noir</h4>
-                          <p>18 Dhs</p>
-                        </div>
-                      </div>
-                      <div className='modal-card px-[20px] flex items-center gap-[15px] mb-[20px]'>
-                        <img src={img1} alt='' />
-                        <div>
-                          <h4>Cafe Noir</h4>
-                          <p>18 Dhs</p>
-                        </div>
-                      </div>
-                      <div className='modal-card px-[20px] flex items-center gap-[15px] mb-[20px]'>
-                        <img src={img1} alt='' />
-                        <div>
-                          <h4>Cafe Noir</h4>
-                          <p>18 Dhs</p>
-                        </div>
-                      </div>
-                      <input
-                        type='text'
-                        name=''
-                        id=''
-                        className='modal-input'
-                        placeholder='Write something...'
-                      />
-                      <form method='dialog'>
-                        <button
-                          className='ok-btn'
-                          onClick={() =>
-                            document.getElementById("my_modal_3").showModal()
-                          }
-                        >
-                          Ok
-                        </button>
-                      </form>
-                    </div>
-                  </dialog>
-                  <dialog id='my_modal_3' className='modal'>
-                    <div className='modal-box'>
-                      <h3 className='comment-title'>Produit bien ajouté</h3>
-                      <div className='text-center mx-auto'>
-                        <img
-                          className='mx-auto mb-[34px] mt-[45px]'
-                          src={ok}
-                          alt=''
-                        />
-                      </div>
-
-                      <p className='redirected'>
-                        vous serez redirigé dans quelques instants...
-                      </p>
-                      <form method='dialog' className='modal-backdrop'>
-                        <button>close</button>
-                      </form>
-                    </div>
-                  </dialog>
-                </div>
-              </div>
-            </div>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              width='17'
-              height='161'
-              viewBox='0 0 17 161'
-              fill='none'
-              className='absolute left-0 bottom-[35px] lg:bottom-[60px]'
-            >
-              <path
-                d='M1 1L16 0.999999'
-                stroke='#FFDECC'
-                stroke-linecap='round'
-              />
-              <path
-                d='M1 63.5C0.723858 63.5 0.5 63.7239 0.5 64C0.5 64.2761 0.723858 64.5 1 64.5L1 63.5ZM15 64L10 61.1132L10 66.8868L15 64ZM1 64.5L10.5 64.5L10.5 63.5L1 63.5L1 64.5Z'
-                fill='#FFDECC'
-              />
-              <path
-                d='M1 157.5C0.723858 157.5 0.5 157.724 0.5 158C0.5 158.276 0.723858 158.5 1 158.5L1 157.5ZM15 158L10 155.113L10 160.887L15 158ZM1 158.5L10.5 158.5L10.5 157.5L1 157.5L1 158.5Z'
-                fill='#FFDECC'
-              />
-              <path
-                d='M1 158L1.00001 1.00001'
-                stroke='#FFDECC'
-                stroke-linecap='round'
-              />
-            </svg>
-            <div className='more-items ml-[15px]'>
-              <select name='' id=''>
-                <option value=''>More Similar Items</option>
-              </select>
-              <div className='flex items-center gap-[14px] mb-[15px] pr-[10px] lg:pr-0 '>
-                <img src={img1} alt='' />
-                <div>
-                  <h2>Care Noir</h2>
-                  <div className='flex items-center'>
-                    <p className='price mr-[45px]'>18 Dhs</p>
-                    <div className='input-group mr-[10px]'>
-                      <button onClick={() => setDecrease()}>
-                        <svg
-                          xmlns='http://www.w3.org/2000/svg'
-                          width='5'
-                          height='1'
-                          viewBox='0 0 5 1'
-                          fill='none'
-                        >
-                          <path
-                            d='M0.21875 0.942242H4.25272V0H0.21875V0.942242Z'
-                            fill='#3F3F3F'
-                          />
-                        </svg>
-                      </button>
-                      <p>{value}</p>
-                      <button onClick={() => setIncrease()}>
-                        <svg
-                          xmlns='http://www.w3.org/2000/svg'
-                          width='5'
-                          height='5'
-                          viewBox='0 0 5 5'
-                          fill='none'
-                        >
-                          <path
-                            d='M1.98263 0V2.03171H0V2.97395H1.98263V5.00566H3.02302V2.97395H5.00566V2.03171H3.02302V0H1.98263Z'
-                            fill='#F06D23'
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                    <p className='mr-[2px]'>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='9'
-                        height='9'
-                        viewBox='0 0 9 9'
-                        fill='none'
-                      >
-                        <path
-                          d='M8.02664 1.31949L1.38766 7.95847M8.02664 7.95847L1.38766 1.31949'
-                          stroke='black'
-                          stroke-width='1.4'
-                          stroke-linecap='round'
-                          stroke-linejoin='round'
-                        />
-                      </svg>
-                    </p>
-                    <p className='qty mr-[10px]'>2</p>
-                    <button className='delete-btn_similar'>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='20'
-                        height='20'
-                        viewBox='0 0 20 20'
-                        fill='none'
-                      >
-                        <path
-                          d='M17.5 4.16663H2.50002C2.27901 4.16663 2.06704 4.25442 1.91076 4.4107C1.75448 4.56698 1.66669 4.77895 1.66669 4.99996C1.66669 5.22097 1.75448 5.43293 1.91076 5.58921C2.06704 5.7455 2.27901 5.83329 2.50002 5.83329H4.16669V15.8333C4.16689 16.4963 4.43034 17.132 4.89914 17.6008C5.36794 18.0696 6.00371 18.3331 6.66669 18.3333H13.3334C13.9963 18.3331 14.6321 18.0697 15.1009 17.6009C15.5697 17.1321 15.8332 16.4963 15.8334 15.8333V5.83329H17.5C17.721 5.83329 17.933 5.7455 18.0893 5.58921C18.2456 5.43293 18.3334 5.22097 18.3334 4.99996C18.3334 4.77895 18.2456 4.56698 18.0893 4.4107C17.933 4.25442 17.721 4.16663 17.5 4.16663ZM9.16669 13.3333C9.16669 13.5543 9.07889 13.7663 8.92261 13.9226C8.76633 14.0788 8.55437 14.1666 8.33335 14.1666C8.11234 14.1666 7.90038 14.0788 7.7441 13.9226C7.58782 13.7663 7.50002 13.5543 7.50002 13.3333V9.16663C7.50002 8.94561 7.58782 8.73365 7.7441 8.57737C7.90038 8.42109 8.11234 8.33329 8.33335 8.33329C8.55437 8.33329 8.76633 8.42109 8.92261 8.57737C9.07889 8.73365 9.16669 8.94561 9.16669 9.16663V13.3333ZM12.5 13.3333C12.5 13.5543 12.4122 13.7663 12.2559 13.9226C12.0997 14.0788 11.8877 14.1666 11.6667 14.1666C11.4457 14.1666 11.2337 14.0788 11.0774 13.9226C10.9212 13.7663 10.8334 13.5543 10.8334 13.3333V9.16663C10.8334 8.94561 10.9212 8.73365 11.0774 8.57737C11.2337 8.42109 11.4457 8.33329 11.6667 8.33329C11.8877 8.33329 12.0997 8.42109 12.2559 8.57737C12.4122 8.73365 12.5 8.94561 12.5 9.16663V13.3333Z'
-                          fill='white'
-                        />
-                        <path
-                          d='M8.33333 3.33329H11.6667C11.8877 3.33329 12.0996 3.2455 12.2559 3.08922C12.4122 2.93293 12.5 2.72097 12.5 2.49996C12.5 2.27895 12.4122 2.06698 12.2559 1.9107C12.0996 1.75442 11.8877 1.66663 11.6667 1.66663H8.33333C8.11232 1.66663 7.90036 1.75442 7.74408 1.9107C7.5878 2.06698 7.5 2.27895 7.5 2.49996C7.5 2.72097 7.5878 2.93293 7.74408 3.08922C7.90036 3.2455 8.11232 3.33329 8.33333 3.33329Z'
-                          fill='white'
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className='flex items-center gap-[14px] pr-[10px] lg:pr-0 '>
-                <img src={img1} alt='' />
-                <div>
-                  <h2>Care Noir</h2>
-                  <div className='flex items-center'>
-                    <p className='price mr-[45px]'>18 Dhs</p>
-                    <div className='input-group mr-[10px]'>
-                      <button onClick={() => setDecrease()}>
-                        <svg
-                          xmlns='http://www.w3.org/2000/svg'
-                          width='5'
-                          height='1'
-                          viewBox='0 0 5 1'
-                          fill='none'
-                        >
-                          <path
-                            d='M0.21875 0.942242H4.25272V0H0.21875V0.942242Z'
-                            fill='#3F3F3F'
-                          />
-                        </svg>
-                      </button>
-                      <p>{value}</p>
-                      <button onClick={() => setIncrease()}>
-                        <svg
-                          xmlns='http://www.w3.org/2000/svg'
-                          width='5'
-                          height='5'
-                          viewBox='0 0 5 5'
-                          fill='none'
-                        >
-                          <path
-                            d='M1.98263 0V2.03171H0V2.97395H1.98263V5.00566H3.02302V2.97395H5.00566V2.03171H3.02302V0H1.98263Z'
-                            fill='#F06D23'
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                    <p className='mr-[2px]'>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='9'
-                        height='9'
-                        viewBox='0 0 9 9'
-                        fill='none'
-                      >
-                        <path
-                          d='M8.02664 1.31949L1.38766 7.95847M8.02664 7.95847L1.38766 1.31949'
-                          stroke='black'
-                          stroke-width='1.4'
-                          stroke-linecap='round'
-                          stroke-linejoin='round'
-                        />
-                      </svg>
-                    </p>
-                    <p className='qty mr-[10px]'>2</p>
-                    <button className='delete-btn_similar'>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='20'
-                        height='20'
-                        viewBox='0 0 20 20'
-                        fill='none'
-                      >
-                        <path
-                          d='M17.5 4.16663H2.50002C2.27901 4.16663 2.06704 4.25442 1.91076 4.4107C1.75448 4.56698 1.66669 4.77895 1.66669 4.99996C1.66669 5.22097 1.75448 5.43293 1.91076 5.58921C2.06704 5.7455 2.27901 5.83329 2.50002 5.83329H4.16669V15.8333C4.16689 16.4963 4.43034 17.132 4.89914 17.6008C5.36794 18.0696 6.00371 18.3331 6.66669 18.3333H13.3334C13.9963 18.3331 14.6321 18.0697 15.1009 17.6009C15.5697 17.1321 15.8332 16.4963 15.8334 15.8333V5.83329H17.5C17.721 5.83329 17.933 5.7455 18.0893 5.58921C18.2456 5.43293 18.3334 5.22097 18.3334 4.99996C18.3334 4.77895 18.2456 4.56698 18.0893 4.4107C17.933 4.25442 17.721 4.16663 17.5 4.16663ZM9.16669 13.3333C9.16669 13.5543 9.07889 13.7663 8.92261 13.9226C8.76633 14.0788 8.55437 14.1666 8.33335 14.1666C8.11234 14.1666 7.90038 14.0788 7.7441 13.9226C7.58782 13.7663 7.50002 13.5543 7.50002 13.3333V9.16663C7.50002 8.94561 7.58782 8.73365 7.7441 8.57737C7.90038 8.42109 8.11234 8.33329 8.33335 8.33329C8.55437 8.33329 8.76633 8.42109 8.92261 8.57737C9.07889 8.73365 9.16669 8.94561 9.16669 9.16663V13.3333ZM12.5 13.3333C12.5 13.5543 12.4122 13.7663 12.2559 13.9226C12.0997 14.0788 11.8877 14.1666 11.6667 14.1666C11.4457 14.1666 11.2337 14.0788 11.0774 13.9226C10.9212 13.7663 10.8334 13.5543 10.8334 13.3333V9.16663C10.8334 8.94561 10.9212 8.73365 11.0774 8.57737C11.2337 8.42109 11.4457 8.33329 11.6667 8.33329C11.8877 8.33329 12.0997 8.42109 12.2559 8.57737C12.4122 8.73365 12.5 8.94561 12.5 9.16663V13.3333Z'
-                          fill='white'
-                        />
-                        <path
-                          d='M8.33333 3.33329H11.6667C11.8877 3.33329 12.0996 3.2455 12.2559 3.08922C12.4122 2.93293 12.5 2.72097 12.5 2.49996C12.5 2.27895 12.4122 2.06698 12.2559 1.9107C12.0996 1.75442 11.8877 1.66663 11.6667 1.66663H8.33333C8.11232 1.66663 7.90036 1.75442 7.74408 1.9107C7.5878 2.06698 7.5 2.27895 7.5 2.49996C7.5 2.72097 7.5878 2.93293 7.74408 3.08922C7.90036 3.2455 8.11232 3.33329 8.33333 3.33329Z'
-                          fill='white'
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className='order-items-2'>
-            <div className='flex items-center gap-[14px]'>
-              <img src={img1} alt='' />
-              <div>
-                <div className='flex justify-between items-center'>
-                  <h2>Care Noir</h2>
-                  <button className='delete-btn_header '>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='20'
-                      height='20'
-                      viewBox='0 0 20 20'
-                      fill='none'
-                    >
-                      <path
-                        d='M17.5 4.16663H2.50002C2.27901 4.16663 2.06704 4.25442 1.91076 4.4107C1.75448 4.56698 1.66669 4.77895 1.66669 4.99996C1.66669 5.22097 1.75448 5.43293 1.91076 5.58921C2.06704 5.7455 2.27901 5.83329 2.50002 5.83329H4.16669V15.8333C4.16689 16.4963 4.43034 17.132 4.89914 17.6008C5.36794 18.0696 6.00371 18.3331 6.66669 18.3333H13.3334C13.9963 18.3331 14.6321 18.0697 15.1009 17.6009C15.5697 17.1321 15.8332 16.4963 15.8334 15.8333V5.83329H17.5C17.721 5.83329 17.933 5.7455 18.0893 5.58921C18.2456 5.43293 18.3334 5.22097 18.3334 4.99996C18.3334 4.77895 18.2456 4.56698 18.0893 4.4107C17.933 4.25442 17.721 4.16663 17.5 4.16663ZM9.16669 13.3333C9.16669 13.5543 9.07889 13.7663 8.92261 13.9226C8.76633 14.0788 8.55437 14.1666 8.33335 14.1666C8.11234 14.1666 7.90038 14.0788 7.7441 13.9226C7.58782 13.7663 7.50002 13.5543 7.50002 13.3333V9.16663C7.50002 8.94561 7.58782 8.73365 7.7441 8.57737C7.90038 8.42109 8.11234 8.33329 8.33335 8.33329C8.55437 8.33329 8.76633 8.42109 8.92261 8.57737C9.07889 8.73365 9.16669 8.94561 9.16669 9.16663V13.3333ZM12.5 13.3333C12.5 13.5543 12.4122 13.7663 12.2559 13.9226C12.0997 14.0788 11.8877 14.1666 11.6667 14.1666C11.4457 14.1666 11.2337 14.0788 11.0774 13.9226C10.9212 13.7663 10.8334 13.5543 10.8334 13.3333V9.16663C10.8334 8.94561 10.9212 8.73365 11.0774 8.57737C11.2337 8.42109 11.4457 8.33329 11.6667 8.33329C11.8877 8.33329 12.0997 8.42109 12.2559 8.57737C12.4122 8.73365 12.5 8.94561 12.5 9.16663V13.3333Z'
-                        fill='white'
-                      />
-                      <path
-                        d='M8.33333 3.33329H11.6667C11.8877 3.33329 12.0996 3.2455 12.2559 3.08922C12.4122 2.93293 12.5 2.72097 12.5 2.49996C12.5 2.27895 12.4122 2.06698 12.2559 1.9107C12.0996 1.75442 11.8877 1.66663 11.6667 1.66663H8.33333C8.11232 1.66663 7.90036 1.75442 7.74408 1.9107C7.5878 2.06698 7.5 2.27895 7.5 2.49996C7.5 2.72097 7.5878 2.93293 7.74408 3.08922C7.90036 3.2455 8.11232 3.33329 8.33333 3.33329Z'
-                        fill='white'
-                      />
-                    </svg>
-                  </button>
-                </div>
-                <div className='flex items-center'>
-                  <p className='price mr-[53px] lg:mr-[60px]'>18 Dhs</p>
-                  <div className='input-group mr-[10px]'>
-                    <button onClick={() => setDecrease()}>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='5'
-                        height='1'
-                        viewBox='0 0 5 1'
-                        fill='none'
-                      >
-                        <path
-                          d='M0.21875 0.942242H4.25272V0H0.21875V0.942242Z'
-                          fill='#3F3F3F'
-                        />
-                      </svg>
-                    </button>
-                    <p>{value}</p>
-                    <button onClick={() => setIncrease()}>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='5'
-                        height='5'
-                        viewBox='0 0 5 5'
-                        fill='none'
-                      >
-                        <path
-                          d='M1.98263 0V2.03171H0V2.97395H1.98263V5.00566H3.02302V2.97395H5.00566V2.03171H3.02302V0H1.98263Z'
-                          fill='#F06D23'
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                  <p className='mr-[2px]'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='9'
-                      height='9'
-                      viewBox='0 0 9 9'
-                      fill='none'
-                    >
-                      <path
-                        d='M8.02664 1.31949L1.38766 7.95847M8.02664 7.95847L1.38766 1.31949'
-                        stroke='black'
-                        stroke-width='1.4'
-                        stroke-linecap='round'
-                        stroke-linejoin='round'
-                      />
-                    </svg>
-                  </p>
-                  <p className='qty mr-[10px]'>2</p>
-                  <button className='delete-btn'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='20'
-                      height='20'
-                      viewBox='0 0 20 20'
-                      fill='none'
-                    >
-                      <path
-                        d='M17.5 4.16663H2.50002C2.27901 4.16663 2.06704 4.25442 1.91076 4.4107C1.75448 4.56698 1.66669 4.77895 1.66669 4.99996C1.66669 5.22097 1.75448 5.43293 1.91076 5.58921C2.06704 5.7455 2.27901 5.83329 2.50002 5.83329H4.16669V15.8333C4.16689 16.4963 4.43034 17.132 4.89914 17.6008C5.36794 18.0696 6.00371 18.3331 6.66669 18.3333H13.3334C13.9963 18.3331 14.6321 18.0697 15.1009 17.6009C15.5697 17.1321 15.8332 16.4963 15.8334 15.8333V5.83329H17.5C17.721 5.83329 17.933 5.7455 18.0893 5.58921C18.2456 5.43293 18.3334 5.22097 18.3334 4.99996C18.3334 4.77895 18.2456 4.56698 18.0893 4.4107C17.933 4.25442 17.721 4.16663 17.5 4.16663ZM9.16669 13.3333C9.16669 13.5543 9.07889 13.7663 8.92261 13.9226C8.76633 14.0788 8.55437 14.1666 8.33335 14.1666C8.11234 14.1666 7.90038 14.0788 7.7441 13.9226C7.58782 13.7663 7.50002 13.5543 7.50002 13.3333V9.16663C7.50002 8.94561 7.58782 8.73365 7.7441 8.57737C7.90038 8.42109 8.11234 8.33329 8.33335 8.33329C8.55437 8.33329 8.76633 8.42109 8.92261 8.57737C9.07889 8.73365 9.16669 8.94561 9.16669 9.16663V13.3333ZM12.5 13.3333C12.5 13.5543 12.4122 13.7663 12.2559 13.9226C12.0997 14.0788 11.8877 14.1666 11.6667 14.1666C11.4457 14.1666 11.2337 14.0788 11.0774 13.9226C10.9212 13.7663 10.8334 13.5543 10.8334 13.3333V9.16663C10.8334 8.94561 10.9212 8.73365 11.0774 8.57737C11.2337 8.42109 11.4457 8.33329 11.6667 8.33329C11.8877 8.33329 12.0997 8.42109 12.2559 8.57737C12.4122 8.73365 12.5 8.94561 12.5 9.16663V13.3333Z'
-                        fill='white'
-                      />
-                      <path
-                        d='M8.33333 3.33329H11.6667C11.8877 3.33329 12.0996 3.2455 12.2559 3.08922C12.4122 2.93293 12.5 2.72097 12.5 2.49996C12.5 2.27895 12.4122 2.06698 12.2559 1.9107C12.0996 1.75442 11.8877 1.66663 11.6667 1.66663H8.33333C8.11232 1.66663 7.90036 1.75442 7.74408 1.9107C7.5878 2.06698 7.5 2.27895 7.5 2.49996C7.5 2.72097 7.5878 2.93293 7.74408 3.08922C7.90036 3.2455 8.11232 3.33329 8.33333 3.33329Z'
-                        fill='white'
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    className='comment-btn'
-                    onClick={() =>
-                      document.getElementById("my_modal_1").showModal()
-                    }
-                  >
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='20'
-                      height='20'
-                      viewBox='0 0 20 20'
-                      fill='none'
-                    >
-                      <path
-                        d='M10 17.5C11.4834 17.5 12.9334 17.0601 14.1668 16.236C15.4001 15.4119 16.3614 14.2406 16.9291 12.8701C17.4968 11.4997 17.6453 9.99168 17.3559 8.53683C17.0665 7.08197 16.3522 5.7456 15.3033 4.6967C14.2544 3.64781 12.918 2.9335 11.4632 2.64411C10.0083 2.35472 8.50032 2.50325 7.12987 3.07091C5.75943 3.63856 4.58809 4.59986 3.76398 5.83323C2.93987 7.0666 2.5 8.51664 2.5 10C2.5 11.24 2.8 12.4092 3.33333 13.4392L2.5 17.5L6.56083 16.6667C7.59083 17.2 8.76083 17.5 10 17.5Z'
-                        stroke='white'
-                        stroke-linecap='round'
-                        stroke-linejoin='round'
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className='order-items-2'>
-            <div className='flex items-center gap-[14px]'>
-              <img src={img1} alt='' />
-              <div>
-                <h2>Care Noir</h2>
-                <div className='flex items-center'>
-                  <p className='price mr-[53px] lg:mr-[60px]'>18 Dhs</p>
-                  <div className='input-group mr-[10px]'>
-                    <button onClick={() => setDecrease()}>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='5'
-                        height='1'
-                        viewBox='0 0 5 1'
-                        fill='none'
-                      >
-                        <path
-                          d='M0.21875 0.942242H4.25272V0H0.21875V0.942242Z'
-                          fill='#3F3F3F'
-                        />
-                      </svg>
-                    </button>
-                    <p>{value}</p>
-                    <button onClick={() => setIncrease()}>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='5'
-                        height='5'
-                        viewBox='0 0 5 5'
-                        fill='none'
-                      >
-                        <path
-                          d='M1.98263 0V2.03171H0V2.97395H1.98263V5.00566H3.02302V2.97395H5.00566V2.03171H3.02302V0H1.98263Z'
-                          fill='#F06D23'
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                  <p className='mr-[2px]'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='9'
-                      height='9'
-                      viewBox='0 0 9 9'
-                      fill='none'
-                    >
-                      <path
-                        d='M8.02664 1.31949L1.38766 7.95847M8.02664 7.95847L1.38766 1.31949'
-                        stroke='black'
-                        stroke-width='1.4'
-                        stroke-linecap='round'
-                        stroke-linejoin='round'
-                      />
-                    </svg>
-                  </p>
-                  <p className='qty mr-[10px]'>2</p>
-                  <button className='delete-btn'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='20'
-                      height='20'
-                      viewBox='0 0 20 20'
-                      fill='none'
-                    >
-                      <path
-                        d='M17.5 4.16663H2.50002C2.27901 4.16663 2.06704 4.25442 1.91076 4.4107C1.75448 4.56698 1.66669 4.77895 1.66669 4.99996C1.66669 5.22097 1.75448 5.43293 1.91076 5.58921C2.06704 5.7455 2.27901 5.83329 2.50002 5.83329H4.16669V15.8333C4.16689 16.4963 4.43034 17.132 4.89914 17.6008C5.36794 18.0696 6.00371 18.3331 6.66669 18.3333H13.3334C13.9963 18.3331 14.6321 18.0697 15.1009 17.6009C15.5697 17.1321 15.8332 16.4963 15.8334 15.8333V5.83329H17.5C17.721 5.83329 17.933 5.7455 18.0893 5.58921C18.2456 5.43293 18.3334 5.22097 18.3334 4.99996C18.3334 4.77895 18.2456 4.56698 18.0893 4.4107C17.933 4.25442 17.721 4.16663 17.5 4.16663ZM9.16669 13.3333C9.16669 13.5543 9.07889 13.7663 8.92261 13.9226C8.76633 14.0788 8.55437 14.1666 8.33335 14.1666C8.11234 14.1666 7.90038 14.0788 7.7441 13.9226C7.58782 13.7663 7.50002 13.5543 7.50002 13.3333V9.16663C7.50002 8.94561 7.58782 8.73365 7.7441 8.57737C7.90038 8.42109 8.11234 8.33329 8.33335 8.33329C8.55437 8.33329 8.76633 8.42109 8.92261 8.57737C9.07889 8.73365 9.16669 8.94561 9.16669 9.16663V13.3333ZM12.5 13.3333C12.5 13.5543 12.4122 13.7663 12.2559 13.9226C12.0997 14.0788 11.8877 14.1666 11.6667 14.1666C11.4457 14.1666 11.2337 14.0788 11.0774 13.9226C10.9212 13.7663 10.8334 13.5543 10.8334 13.3333V9.16663C10.8334 8.94561 10.9212 8.73365 11.0774 8.57737C11.2337 8.42109 11.4457 8.33329 11.6667 8.33329C11.8877 8.33329 12.0997 8.42109 12.2559 8.57737C12.4122 8.73365 12.5 8.94561 12.5 9.16663V13.3333Z'
-                        fill='white'
-                      />
-                      <path
-                        d='M8.33333 3.33329H11.6667C11.8877 3.33329 12.0996 3.2455 12.2559 3.08922C12.4122 2.93293 12.5 2.72097 12.5 2.49996C12.5 2.27895 12.4122 2.06698 12.2559 1.9107C12.0996 1.75442 11.8877 1.66663 11.6667 1.66663H8.33333C8.11232 1.66663 7.90036 1.75442 7.74408 1.9107C7.5878 2.06698 7.5 2.27895 7.5 2.49996C7.5 2.72097 7.5878 2.93293 7.74408 3.08922C7.90036 3.2455 8.11232 3.33329 8.33333 3.33329Z'
-                        fill='white'
-                      />
-                    </svg>
-                  </button>
-                  <button
-                    className='comment-btn'
-                    onClick={() =>
-                      document.getElementById("my_modal_1").showModal()
-                    }
-                  >
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      width='20'
-                      height='20'
-                      viewBox='0 0 20 20'
-                      fill='none'
-                    >
-                      <path
-                        d='M10 17.5C11.4834 17.5 12.9334 17.0601 14.1668 16.236C15.4001 15.4119 16.3614 14.2406 16.9291 12.8701C17.4968 11.4997 17.6453 9.99168 17.3559 8.53683C17.0665 7.08197 16.3522 5.7456 15.3033 4.6967C14.2544 3.64781 12.918 2.9335 11.4632 2.64411C10.0083 2.35472 8.50032 2.50325 7.12987 3.07091C5.75943 3.63856 4.58809 4.59986 3.76398 5.83323C2.93987 7.0666 2.5 8.51664 2.5 10C2.5 11.24 2.8 12.4092 3.33333 13.4392L2.5 17.5L6.56083 16.6667C7.59083 17.2 8.76083 17.5 10 17.5Z'
-                        stroke='white'
-                        stroke-linecap='round'
-                        stroke-linejoin='round'
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          {storesItem.map((item) => (
+            <OrderItemCard
+              key={item.id}
+              item={item}
+              handleDelete={handleDelete}
+            ></OrderItemCard>
+          ))}
         </div>
         <div className='billing mt-[55px]'>
           <h2>Billing Details</h2>

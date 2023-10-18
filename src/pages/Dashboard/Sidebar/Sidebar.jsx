@@ -12,8 +12,11 @@ const Sidebar = ({ openSidebarToggle, OpenSidebar }) => {
         <div className='sidebar-brand'>
           <img className='ml-[27px]' src={logo} alt='' />
         </div>
-        <span className='icon close_icon' onClick={OpenSidebar}>
-          X
+        <span
+          className='  close-btn mr-5 flex justify-center items-center pl-2 pt-[3px]'
+          onClick={OpenSidebar}
+        >
+          ✕
         </span>
       </div>
 

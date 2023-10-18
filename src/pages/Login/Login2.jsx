@@ -12,12 +12,12 @@ const Login2 = () => {
             Login
           </h3>
           <p className='text-center md:text-left  mb-[144px]'>Welcome Back!</p>
-          <p className='select-title'>Select a waiter </p>
+          {/* <p className='select-title'>Select a waiter </p>
           <div className='flex md:block justify-between items-center gap-[10px]'>
             <button className='select-btn mb-[10px]'>Parc Jeu</button>
             <button className='select-btn mb-[10px]'>Parc Jeu</button>
             <button className='select-btn'>Parc Jeu</button>
-          </div>
+          </div> */}
         </div>
         <div>
           <div className=''>
