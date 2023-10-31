@@ -4,9 +4,9 @@ import ItemModal2 from "./ItemModal2";
 
 const ItemCard = ({ singleData, setControl, control }) => {
   const [showModal, setShowModal] = useState(false);
-  const { name, image, price, qty } = singleData;
+  const { name, image, price,  } = singleData;
   // console.log(singleData);
-  const [value, setValue] = useState(qty);
+  const [value, setValue] = useState(0);
   const setIncrease = () => {
     setValue(parseInt(value) + 1);
   };
@@ -18,7 +18,7 @@ const ItemCard = ({ singleData, setControl, control }) => {
   return (
     <>
       <div className='card relative'>
-        <img src={image} alt='' />
+        <img src="/images/img-1.png" alt='' />
         <h2>{name}</h2>
         <button onClick={() => setShowModal(true)} className='add-btn'>
           <svg

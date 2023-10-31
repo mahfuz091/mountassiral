@@ -8,11 +8,12 @@ import Customer from "../pages/Dashboard/Customer/Customer";
 import Setting from "../pages/Dashboard/Setting/Setting";
 import Login from "../pages/Login/Login";
 import Login2 from "../pages/Login/Login2";
+import PrivetRoute from "../pages/PrivetRoute/PrivetRoute";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <DashBoardLayout />,
+    element: <PrivetRoute> <DashBoardLayout /></PrivetRoute>,
     children: [
       {
         path: "/",
@@ -41,11 +42,11 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "login",
+    path: "login2",
     element: <Login2 />,
   },
   {
-    path: "login2",
+    path: "login",
     element: <Login />,
   },
 ]);

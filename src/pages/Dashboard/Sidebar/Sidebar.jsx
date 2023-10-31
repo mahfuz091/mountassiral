@@ -1,8 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../../../assets/Images/logo.png";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import axiosInstance from "../../../axios/axios-instance";
 
 const Sidebar = ({ openSidebarToggle, OpenSidebar }) => {
+  const navigate = useNavigate();
+  const logOut = () => {
+    localStorage.removeItem("accessToken");
+    navigate("/login");
+  };
+  const [users, setUsers] = useState([]);
+  const [loginUser, setLoginUser] = useState([]);
+  useEffect(() => {
+    async function getUsers() {
+      try {
+        const response = await axiosInstance.get("/users");
+        console.log(response.data);
+        setUsers(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    getUsers();
+  }, []);
+  useEffect(() => {
+    const loginUser = localStorage.getItem("accessToken");
+    const adminUser = users.find((user) => user.username == loginUser);
+    console.log("hh", adminUser, loginUser);
+    setLoginUser(adminUser);
+  }, [users]);
+
   return (
     <aside
       id='sidebar'
@@ -112,55 +139,61 @@ const Sidebar = ({ openSidebarToggle, OpenSidebar }) => {
           </svg>{" "}
           Print History
         </NavLink>
-        <NavLink
-          to='/customer'
-          className={({ isActive }) =>
-            isActive
-              ? "sidebar-list-item sidebar-list-item-active"
-              : "sidebar-list-item"
-          }
-        >
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            width='20'
-            height='20'
-            viewBox='0 0 20 20'
-            fill='none'
-          >
-            <g clip-path='url(#clip0_1_1879)'>
-              <path
-                d='M10 8.07153C11.8769 8.07153 13.3984 6.55 13.3984 4.6731C13.3984 2.79619 11.8769 1.27466 10 1.27466C8.12309 1.27466 6.60156 2.79619 6.60156 4.6731C6.60156 6.55 8.12309 8.07153 10 8.07153Z'
-                fill='black'
-              />
-              <path
-                d='M16.875 8.07153C18.0615 8.07153 19.0234 7.10965 19.0234 5.9231C19.0234 4.73655 18.0615 3.77466 16.875 3.77466C15.6885 3.77466 14.7266 4.73655 14.7266 5.9231C14.7266 7.10965 15.6885 8.07153 16.875 8.07153Z'
-                fill='black'
-              />
-              <path
-                d='M3.125 8.07153C4.31155 8.07153 5.27344 7.10965 5.27344 5.9231C5.27344 4.73655 4.31155 3.77466 3.125 3.77466C1.93845 3.77466 0.976562 4.73655 0.976562 5.9231C0.976562 7.10965 1.93845 8.07153 3.125 8.07153Z'
-                fill='black'
-              />
-              <path
-                d='M5.2418 10.0008C4.39609 9.30793 3.6302 9.39965 2.65234 9.39965C1.18984 9.39965 0 10.5825 0 12.036V16.302C0 16.9332 0.515234 17.4465 1.14883 17.4465C3.88422 17.4465 3.55469 17.496 3.55469 17.3286C3.55469 14.3057 3.19664 12.0888 5.2418 10.0008Z'
-                fill='black'
-              />
-              <path
-                d='M10.9302 9.41523C9.22222 9.27277 7.73765 9.41687 6.45715 10.4738C4.31429 12.1902 4.72668 14.5013 4.72668 17.3285C4.72668 18.0765 5.33527 18.6965 6.09465 18.6965C14.34 18.6965 14.6682 18.9625 15.1571 17.8797C15.3175 17.5135 15.2736 17.6299 15.2736 14.127C15.2736 11.3447 12.8645 9.41523 10.9302 9.41523Z'
-                fill='black'
-              />
-              <path
-                d='M17.3478 9.39967C16.3646 9.39967 15.6029 9.30889 14.7583 10.0008C16.7882 12.0733 16.4454 14.1389 16.4454 17.3286C16.4454 17.4971 16.1719 17.4465 18.8103 17.4465C19.4665 17.4465 20.0001 16.9149 20.0001 16.2614V12.036C20.0001 10.5825 18.8103 9.39967 17.3478 9.39967Z'
-                fill='black'
-              />
-            </g>
-            <defs>
-              <clipPath id='clip0_1_1879'>
-                <rect width='20' height='20' fill='white' />
-              </clipPath>
-            </defs>
-          </svg>{" "}
-          Customer
-        </NavLink>
+        {loginUser?.role === "admin" ? (
+          <>
+            <NavLink
+              to='/customer'
+              className={({ isActive }) =>
+                isActive
+                  ? "sidebar-list-item sidebar-list-item-active"
+                  : "sidebar-list-item"
+              }
+            >
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                width='20'
+                height='20'
+                viewBox='0 0 20 20'
+                fill='none'
+              >
+                <g clip-path='url(#clip0_1_1879)'>
+                  <path
+                    d='M10 8.07153C11.8769 8.07153 13.3984 6.55 13.3984 4.6731C13.3984 2.79619 11.8769 1.27466 10 1.27466C8.12309 1.27466 6.60156 2.79619 6.60156 4.6731C6.60156 6.55 8.12309 8.07153 10 8.07153Z'
+                    fill='black'
+                  />
+                  <path
+                    d='M16.875 8.07153C18.0615 8.07153 19.0234 7.10965 19.0234 5.9231C19.0234 4.73655 18.0615 3.77466 16.875 3.77466C15.6885 3.77466 14.7266 4.73655 14.7266 5.9231C14.7266 7.10965 15.6885 8.07153 16.875 8.07153Z'
+                    fill='black'
+                  />
+                  <path
+                    d='M3.125 8.07153C4.31155 8.07153 5.27344 7.10965 5.27344 5.9231C5.27344 4.73655 4.31155 3.77466 3.125 3.77466C1.93845 3.77466 0.976562 4.73655 0.976562 5.9231C0.976562 7.10965 1.93845 8.07153 3.125 8.07153Z'
+                    fill='black'
+                  />
+                  <path
+                    d='M5.2418 10.0008C4.39609 9.30793 3.6302 9.39965 2.65234 9.39965C1.18984 9.39965 0 10.5825 0 12.036V16.302C0 16.9332 0.515234 17.4465 1.14883 17.4465C3.88422 17.4465 3.55469 17.496 3.55469 17.3286C3.55469 14.3057 3.19664 12.0888 5.2418 10.0008Z'
+                    fill='black'
+                  />
+                  <path
+                    d='M10.9302 9.41523C9.22222 9.27277 7.73765 9.41687 6.45715 10.4738C4.31429 12.1902 4.72668 14.5013 4.72668 17.3285C4.72668 18.0765 5.33527 18.6965 6.09465 18.6965C14.34 18.6965 14.6682 18.9625 15.1571 17.8797C15.3175 17.5135 15.2736 17.6299 15.2736 14.127C15.2736 11.3447 12.8645 9.41523 10.9302 9.41523Z'
+                    fill='black'
+                  />
+                  <path
+                    d='M17.3478 9.39967C16.3646 9.39967 15.6029 9.30889 14.7583 10.0008C16.7882 12.0733 16.4454 14.1389 16.4454 17.3286C16.4454 17.4971 16.1719 17.4465 18.8103 17.4465C19.4665 17.4465 20.0001 16.9149 20.0001 16.2614V12.036C20.0001 10.5825 18.8103 9.39967 17.3478 9.39967Z'
+                    fill='black'
+                  />
+                </g>
+                <defs>
+                  <clipPath id='clip0_1_1879'>
+                    <rect width='20' height='20' fill='white' />
+                  </clipPath>
+                </defs>
+              </svg>{" "}
+              Customer
+            </NavLink>
+          </>
+        ) : (
+          ""
+        )}
         <NavLink
           to='/setting'
           className={({ isActive }) =>
@@ -183,7 +216,7 @@ const Sidebar = ({ openSidebarToggle, OpenSidebar }) => {
           </svg>{" "}
           Setting
         </NavLink>
-        <NavLink className='sidebar-list-item mt-[100px]'>
+        <NavLink onClick={logOut} className='sidebar-list-item mt-[100px]'>
           <svg
             xmlns='http://www.w3.org/2000/svg'
             width='21'

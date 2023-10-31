@@ -1,26 +1,65 @@
 import React, { useState } from "react";
+import { useContext } from "react";
+import { useEffect } from "react";
+import { ToggleContext } from "../../../context/ToggleProvider";
 
 const OrderItemCard = ({ item, handleDelete }) => {
-  console.log(item);
-  const [value, setValue] = useState(item.singleData.qty);
-  const setIncrease = () => {
+  // console.log(item);
+  const [value, setValue] = useState(item.data?.qty || 0);
+  const [storesItem, setStoresItem] = useState([]);
+  const { control, setControl } = useContext(ToggleContext);
+  console.log(storesItem);
+
+  useEffect(() => {
+    const getStoredItem = JSON.parse(localStorage.getItem("item"));
+    if (getStoredItem) {
+      setStoresItem(getStoredItem);
+    }
+  }, [control]);
+  const setIncrease = (id) => {
     setValue(parseInt(value) + 1);
+    storesItem.map((item) => {
+      // console.log(item.data.qty);
+
+      if (item.data.id === id) {
+        item.data.qty = parseInt(value) + 1;
+
+        // console.log(item.data.qty);
+        // console.log(storesItem);
+        localStorage.setItem("item", JSON.stringify(storesItem));
+        setControl(!control);
+      }
+    });
   };
-  const setDecrease = () => {
-    if (value > 1) {
+  const setDecrease = (id) => {
+    if (value <= 0) {
+      handleDelete(id);
+    } else {
       setValue(parseInt(value) - 1);
+      storesItem.map((item) => {
+        // console.log(item.data.qty);
+
+        if (item.data.id === id) {
+          item.data.qty = parseInt(value) - 1;
+
+          console.log(item.data.qty);
+          console.log(storesItem);
+          localStorage.setItem("item", JSON.stringify(storesItem));
+          setControl(!control);
+        }
+      });
     }
   };
 
   return (
     <div className='order-items w-full relative mb-3 '>
       <div className='flex w-full items-center justify-between gap-[14px]'>
-        <img src={item.singleData.image} alt='' />
+        <img src={item.data?.image} alt='' />
         <div>
           <div className='flex justify-between items-center'>
-            <h4>Care Noir</h4>
+            <h4>{item.data?.name}</h4>
             <button
-              onClick={() => handleDelete(item.singleData.id)}
+              onClick={() => handleDelete(item.data.id)}
               className='delete-btn_header '
             >
               <svg
@@ -45,10 +84,10 @@ const OrderItemCard = ({ item, handleDelete }) => {
           </div>
           <div className='flex items-center'>
             <p className='price mr-[53px] lg:mr-[60px]'>
-              {item.singleData.price} Dhs
+              {item.data?.price} Dhs
             </p>
             <div className='input-group mr-[10px]'>
-              <button onClick={() => setDecrease()}>
+              <button onClick={() => setDecrease(item.data.id)}>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   width='12'
@@ -61,7 +100,7 @@ const OrderItemCard = ({ item, handleDelete }) => {
                 </svg>
               </button>
               <p>{value}</p>
-              <button onClick={() => setIncrease()}>
+              <button onClick={() => setIncrease(item.data.id)}>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   width='11'

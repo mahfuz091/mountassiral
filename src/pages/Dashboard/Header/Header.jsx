@@ -7,8 +7,9 @@ import { ToggleContext } from "../../../context/ToggleProvider";
 
 const Header = ({ OpenSidebar }) => {
   const [storesItem, setStoresItem] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
 
-  const { OpenOrderDetails, control } = useContext(ToggleContext);
+  const { OpenOrderDetails, control, handleSubmit } = useContext(ToggleContext);
   useEffect(() => {
     const getStoredItem = JSON.parse(localStorage.getItem("item"));
     if (getStoredItem) {
@@ -61,8 +62,12 @@ const Header = ({ OpenSidebar }) => {
         </div>
         <div className='header-left '>
           <div className='hidden lg:flex justify-between items-center '>
-            <div className='lg:flex lg:relative'>
+            <form
+              onChange={(e) => handleSubmit(e, searchValue)}
+              className='lg:flex lg:relative'
+            >
               <input
+                onChange={(e) => setSearchValue(e.target.value)}
                 type='search'
                 name=''
                 id=''
@@ -83,7 +88,7 @@ const Header = ({ OpenSidebar }) => {
                 />
               </svg>
               <button className='search-btn'>Search</button>
-            </div>
+            </form>
 
             <div className='flex  gap-[15px] ml-[45px] left-margin xl:ml-[130px] 2xl:ml-[300px]'>
               <div className='relative w-[62px] h-[49px]'>
