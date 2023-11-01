@@ -19,13 +19,34 @@ const ItemModal2 = ({
   const [disabled, setDisabled] = useState(true);
   const [bg, setBg] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  console.log(inputValue);
 
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState([]);
+  const [selectedOption, setSelectedOption] = useState([])
   const handleItemClick = (itemId) => {
-    setSelectedItem(itemId);
+    let newSelectItem = [];
+    // console.log(itemId);
+
+    // console.log(typeof newSelectItem);
+
+    if (selectedItem) {
+
+      const newSelectItem = [...selectedItem, itemId];
+
+      setSelectedItem(newSelectItem)
+    }
+    else {
+      newSelectItem.push(itemId)
+      setSelectedItem(newSelectItem);
+    }
+
+    // newSelectItem.push(data);
+
+
+
+
+
   };
-  // console.log(option);
+  // console.log(selectedItem);
   useEffect(() => {
     if (option.length > 0) {
       setDisabled(true);
@@ -34,9 +55,24 @@ const ItemModal2 = ({
     }
   }, [option]);
 
-  useEffect(() => {
-    option.map((o) => console.log(o.categoryID));
-  }, [option]);
+  const handleItemAdd = (data) => {
+    let newSelectItem = [];
+
+    const item = { data }
+    if (selectedOption) {
+
+      const newSelectItem = [...selectedOption, item];
+
+      setSelectedOption(newSelectItem);
+      setDisabled(false);
+    }
+    else {
+      newSelectItem.push(item)
+      setSelectedOption(newSelectItem);
+      setDisabled(false);
+    }
+  }
+  console.log(selectedOption);
 
   const addToItem = (data) => {
     let newItem = [];
@@ -47,15 +83,27 @@ const ItemModal2 = ({
     const selectedqty = value;
     // console.log(selectedqty);
     singleData.qty = selectedqty;
-
     const previousItem = JSON.parse(localStorage.getItem("item"));
     if (previousItem) {
       const newItem = [...previousItem, item];
-      const isThisItem = previousItem.find((it) => it.id === singleData.id);
+      const isThisItem = previousItem.find((it) => it.data.id == data.id);
+      // console.log(isThisItem);
+      if (isThisItem) {
+        Swal.fire({
+          title: "Produit déjà ajouté",
+          icon: "error",
+          text: "vous serez redirigé dans quelques instants...",
+          showConfirmButton: false,
+          timer: 2000,
+        })
+      }
+      else {
+        localStorage.setItem("item", JSON.stringify(newItem));
+        setItem(newItem);
+        setDisabled(false);
+      }
 
-      localStorage.setItem("item", JSON.stringify(newItem));
-      setItem(newItem);
-      setDisabled(false);
+
       // setControl(!control);
       // setBg(true);
     } else {
@@ -88,13 +136,26 @@ const ItemModal2 = ({
       // console.log(selectedqty);
       singleData.qty = selectedqty;
       const previousItem = JSON.parse(localStorage.getItem("item"));
+      console.log(previousItem);
       if (previousItem) {
         const newItem = [...previousItem, runningItem];
-        // const isThisItem = previousItem.find((it) => it.id === singleData.id);
+        const isThisItem = previousItem.find((it) => it.data.id === data.id);
+        // console.log(isThisItem);
+        if (isThisItem) {
+          Swal.fire({
+            title: "Produit déjà ajouté",
+            icon: "error",
+            text: "vous serez redirigé dans quelques instants...",
+            showConfirmButton: false,
+            timer: 2000,
+          })
+        }
+        else {
+          localStorage.setItem("item", JSON.stringify(newItem));
+          setItem(newItem);
+          setControl(!control);
+        }
 
-        localStorage.setItem("item", JSON.stringify(newItem));
-        setItem(newItem);
-        setControl(!control);
         // setBg(true);
       }
       // if (previousItem) {
@@ -125,7 +186,7 @@ const ItemModal2 = ({
     }
     getOption();
   }, [singleData]);
-  const backgroundColor = bg ? "lightblue" : "white";
+
   return (
     <>
       <div className='flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none '>
@@ -153,6 +214,7 @@ const ItemModal2 = ({
                 ""
               )}
 
+
               {option.length > 0 ? (
                 <>
                   {option?.map((singleOption, index) => (
@@ -164,6 +226,10 @@ const ItemModal2 = ({
                       addToItem={addToItem}
                       singleOption={singleOption}
                       key={index}
+                      handleItemAdd={handleItemAdd}
+                      selectedOption={selectedOption}
+                      setInputValue={setInputValue}
+                      inputValue={inputValue}
                     />
                   ))}
                 </>
@@ -173,15 +239,17 @@ const ItemModal2 = ({
                 </>
               )}
 
-              <input
-                type='text'
-                name=''
-                id=''
-                className='modal-input'
-                placeholder='Write something...'
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-              />
+              {
+                option.length > 0 ? <></> : <> <input
+                  type='text'
+                  name=''
+                  id=''
+                  className='modal-input ml-[20px]'
+                  placeholder='Write something...'
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                /></>
+              }
 
               <button
                 disabled={disabled}

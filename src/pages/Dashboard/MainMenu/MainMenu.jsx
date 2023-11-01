@@ -59,6 +59,7 @@ const MainMenu = () => {
   const handleCategoryClick = (categoryName, index) => {
     setToggleState(index);
     fetchDataByCategory(categoryName);
+
   };
   useEffect(() => {
     handleCategoryClick("BOISSON CHAUDE", 1);

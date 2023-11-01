@@ -8,7 +8,7 @@ const OrderItemCard = ({ item, handleDelete }) => {
   const [value, setValue] = useState(item.data?.qty || 0);
   const [storesItem, setStoresItem] = useState([]);
   const { control, setControl } = useContext(ToggleContext);
-  console.log(storesItem);
+  // console.log(storesItem);
 
   useEffect(() => {
     const getStoredItem = JSON.parse(localStorage.getItem("item"));
@@ -24,8 +24,8 @@ const OrderItemCard = ({ item, handleDelete }) => {
       if (item.data.id === id) {
         item.data.qty = parseInt(value) + 1;
 
-        // console.log(item.data.qty);
-        // console.log(storesItem);
+        console.log(item.data.qty);
+        console.log(storesItem);
         localStorage.setItem("item", JSON.stringify(storesItem));
         setControl(!control);
       }

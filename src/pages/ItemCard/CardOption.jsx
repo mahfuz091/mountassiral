@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import OptionCards from "./OptionCards";
 
 const CardOption = ({
   singleOption,
@@ -7,24 +8,45 @@ const CardOption = ({
   addToItem,
   selectedItem,
   handleItemClick,
+  handleItemAdd,
+  selectedOption,
+  setInputValue,
+  inputValue
 }) => {
+
+
+
+  // console.log(singleOption);
   return (
+
+
     <div
-      onClick={() => {
-        addToItem(singleOption);
-        handleItemClick(singleOption.id);
-      }}
+      // onClick={() => {
+      //   addToItem(singleOption);
+      //   handleItemClick(singleOption.id);
+      // }}
       className={
         selectedItem === singleOption.id
-          ? "modal-card bg-slate-100 px-[20px] flex items-center gap-[15px] mb-[20px]"
-          : "modal-card  px-[20px] flex items-center gap-[15px] mb-[20px]"
+          ? "modal-card bg-slate-100 px-[20px]  mb-[20px]"
+          : "modal-card  px-[20px]  mb-[20px]"
       }
     >
-      <img src={singleOption.image} alt='' />
+      <h2 className="mb-[10px]  font-bold">Choisir {singleOption.categoryID}</h2>
+      {singleOption.options?.map((option, index) => <OptionCards key={index} option={option} selectedItem={selectedItem}
+        handleItemClick={handleItemClick}
+        handleOK={handleOK}
+        setAddItem={setAddItem}
+        addToItem={addToItem}
+        handleItemAdd={handleItemAdd}
+        selectedOption={selectedOption}
+        setInputValue={setInputValue}
+        inputValue={inputValue}
+      ></OptionCards>)}
+      {/* <img src={singleOption.image} alt='' />
       <div>
         <h4>{singleOption.name}</h4>
         <p>{singleOption.price} Dhs</p>
-      </div>
+      </div> */}
     </div>
   );
 };
