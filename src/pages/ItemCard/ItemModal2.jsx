@@ -11,7 +11,6 @@ const ItemModal2 = ({
   setControl,
   control,
 }) => {
-  // console.log(singleData.id);
   const { name, image, price, qty } = singleData;
   const [item, setItem] = useState([]);
   const [option, setOption] = useState([]);
@@ -21,32 +20,45 @@ const ItemModal2 = ({
   const [inputValue, setInputValue] = useState("");
 
   const [selectedItem, setSelectedItem] = useState([]);
-  const [selectedOption, setSelectedOption] = useState([])
+  const [selectedOption, setSelectedOption] = useState([]);
+  console.log(selectedItem);
   const handleItemClick = (itemId) => {
     let newSelectItem = [];
     // console.log(itemId);
 
-    // console.log(typeof newSelectItem);
-
     if (selectedItem) {
-
       const newSelectItem = [...selectedItem, itemId];
+      const isThisItem = selectedItem?.find((it) => it === itemId);
+      console.log(isThisItem);
+      if (isThisItem) {
+        const previousItem = JSON.parse(localStorage.getItem("item"));
 
-      setSelectedItem(newSelectItem)
-    }
-    else {
-      newSelectItem.push(itemId)
+        const filterIt = previousItem.filter((it) => it.data.id !== itemId);
+        localStorage.setItem("item", JSON.stringify(filterIt));
+        const categoryQty = previousItem?.filter(
+          (it) => it?.data?.category?.id === itemId
+        );
+        setCategoryQty(categoryQty);
+        const filterData = selectedItem?.filter((it) => it !== itemId);
+        console.log(filterData);
+        setSelectedItem(filterData);
+      } else setSelectedItem(newSelectItem);
+    } else {
+      newSelectItem.push(itemId);
       setSelectedItem(newSelectItem);
     }
-
-    // newSelectItem.push(data);
-
-
-
-
-
   };
-  // console.log(selectedItem);
+
+  const handleAddComment = (comment) => {
+    const previousItem = JSON.parse(localStorage.getItem("item"));
+    if (previousItem) {
+      previousItem.map((it) => {
+        it.data.comment = comment;
+      });
+    }
+    localStorage.setItem("item", JSON.stringify(previousItem));
+  };
+
   useEffect(() => {
     if (option.length > 0) {
       setDisabled(true);
@@ -54,64 +66,74 @@ const ItemModal2 = ({
       setDisabled(false);
     }
   }, [option]);
+  const [categoryQty, setCategoryQty] = useState([]);
+  useEffect(() => {
+    // console.log(categoryQty.length);
+    if (categoryQty.length > 0) {
+      setDisabled(true);
+    } else {
+      setDisabled(false);
+    }
+  }, [categoryQty]);
 
   const handleItemAdd = (data) => {
     let newSelectItem = [];
 
-    const item = { data }
+    const item = { data };
     if (selectedOption) {
-
       const newSelectItem = [...selectedOption, item];
 
       setSelectedOption(newSelectItem);
       setDisabled(false);
-    }
-    else {
-      newSelectItem.push(item)
+    } else {
+      newSelectItem.push(item);
       setSelectedOption(newSelectItem);
       setDisabled(false);
     }
-  }
-  console.log(selectedOption);
+  };
+  // console.log(selectedOption);
 
   const addToItem = (data) => {
     let newItem = [];
     const comment = inputValue;
-    // console.log(inputValue);
+
     data.comment = comment;
     const item = { data };
     const selectedqty = value;
+    // console.log(data);
     // console.log(selectedqty);
     singleData.qty = selectedqty;
     const previousItem = JSON.parse(localStorage.getItem("item"));
     if (previousItem) {
       const newItem = [...previousItem, item];
       const isThisItem = previousItem.find((it) => it.data.id == data.id);
-      // console.log(isThisItem);
+      const categoryQty = previousItem?.filter(
+        (it) => it?.data?.category?.id === data?.category?.id
+      );
+      setCategoryQty(categoryQty);
+
       if (isThisItem) {
-        Swal.fire({
-          title: "Produit déjà ajouté",
-          icon: "error",
-          text: "vous serez redirigé dans quelques instants...",
-          showConfirmButton: false,
-          timer: 2000,
-        })
-      }
-      else {
+        // Swal.fire({
+        //   title: "Produit déjà ajouté",
+        //   icon: "error",
+        //   text: "vous serez redirigé dans quelques instants...",
+        //   showConfirmButton: false,
+        //   timer: 2000,
+        // });
+      } else {
+        setDisabled(false);
         localStorage.setItem("item", JSON.stringify(newItem));
         setItem(newItem);
-        setDisabled(false);
       }
-
 
       // setControl(!control);
       // setBg(true);
     } else {
+      setDisabled(false);
       newItem.push(item);
       localStorage.setItem("item", JSON.stringify(newItem));
       setItem(newItem);
-      // setControl(!control);
-      setDisabled(false);
+
       // setBg(true);
     }
   };
@@ -125,6 +147,7 @@ const ItemModal2 = ({
       showConfirmButton: false,
       timer: 2000,
     });
+    handleAddComment(inputValue);
     setShowModal(false);
     if (data) {
       let newItem = [];
@@ -148,9 +171,8 @@ const ItemModal2 = ({
             text: "vous serez redirigé dans quelques instants...",
             showConfirmButton: false,
             timer: 2000,
-          })
-        }
-        else {
+          });
+        } else {
           localStorage.setItem("item", JSON.stringify(newItem));
           setItem(newItem);
           setControl(!control);
@@ -214,7 +236,6 @@ const ItemModal2 = ({
                 ""
               )}
 
-
               {option.length > 0 ? (
                 <>
                   {option?.map((singleOption, index) => (
@@ -239,17 +260,15 @@ const ItemModal2 = ({
                 </>
               )}
 
-              {
-                option.length > 0 ? <></> : <> <input
-                  type='text'
-                  name=''
-                  id=''
-                  className='modal-input ml-[20px]'
-                  placeholder='Write something...'
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                /></>
-              }
+              <input
+                type='text'
+                name=''
+                id=''
+                className='modal-input ml-[20px]'
+                placeholder='Write something...'
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+              />
 
               <button
                 disabled={disabled}

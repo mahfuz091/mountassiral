@@ -59,7 +59,6 @@ const MainMenu = () => {
   const handleCategoryClick = (categoryName, index) => {
     setToggleState(index);
     fetchDataByCategory(categoryName);
-
   };
   useEffect(() => {
     handleCategoryClick("BOISSON CHAUDE", 1);
@@ -264,6 +263,7 @@ const MainMenu = () => {
               key={index}
               item={item}
               handleDelete={handleDelete}
+              username={username}
             ></OrderItemCard>
           ))}
         </div>

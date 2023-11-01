@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { useEffect } from "react";
 import { ToggleContext } from "../../../context/ToggleProvider";
 
-const OrderItemCard = ({ item, handleDelete }) => {
+const OrderItemCard = ({ item, handleDelete, username }) => {
   // console.log(item);
   const [value, setValue] = useState(item.data?.qty || 0);
   const [storesItem, setStoresItem] = useState([]);
@@ -165,12 +165,8 @@ const OrderItemCard = ({ item, handleDelete }) => {
                   </button>
                 </form>
                 <h3 className='comment-title'>Comment</h3>
-                <p className='px-[20px] username'>Username</p>
-                <p className='px-[20px] description'>
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry. Lorem Ipsum has been the industrys
-                  standard dummy text ever since the 1500s.
-                </p>
+                <p className='px-[20px] username'>Username : {username}</p>
+                <p className='px-[20px] description'>{item?.data?.comment}</p>
                 <form method='dialog'>
                   <button className='ok-btn'>Ok</button>
                 </form>
